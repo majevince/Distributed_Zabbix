@@ -1,0 +1,17 @@
+---
+# vars file for mariadb-role
+packages:
+    - mariadb-server
+    - mariadb
+    - python3-PyMySQL
+    - firewalld
+services:
+  -  mariadb
+  - firewalld
+  
+zabbix_db_user: zabbix
+zabbix_db_password: zabbix01
+root_db_password: vince123
+
+zabbix_db01_ip: 192.168.56.101
+zabbix_db02_ip: 192.168.56.103

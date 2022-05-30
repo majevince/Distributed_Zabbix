@@ -1,0 +1,12 @@
+---
+# tasks file for mariadb-role
+- name: install and configure zabbix db_cluster
+  import_tasks: maria_db_config.yml
+
+- name: configure zabbix zabbix_db01
+  import_tasks: replica_config_db01.yml
+  when: ansible_hostname == 'zabbix_db_master'
+
+- name: configure zabbix zabbix_db02
+  import_tasks: replica_config_db02.yml
+  when: ansible_hostname == 'zabiix_db_slave'

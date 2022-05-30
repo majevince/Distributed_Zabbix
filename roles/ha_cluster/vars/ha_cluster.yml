@@ -1,0 +1,25 @@
+---
+packages:
+  - pcs 
+  - pacemaker 
+  - fence-agents-common
+
+ha_username: hacluster
+ha_password: hacluster01
+mariadb_ip: 192.168.56.20
+server_ip: 192.168.56.21
+web_ip: 192.168.56.22
+db_cluster: zabbix_db_cluster
+server_cluster: zabbix_svr_cluster
+web_cluster: zabbix_web_cluster
+db_cluster_host: 
+  - zabbix_db01
+  - zabbix_db02
+svr_cluster_host:
+  - zabbix_server01
+  - zabbix_server01
+web_cluster_host:
+  - zabbix_web01
+  - zabbix_web02
+fw_service: high-availability
+pcs_deamon: pcsd

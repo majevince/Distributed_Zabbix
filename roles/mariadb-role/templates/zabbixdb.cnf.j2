@@ -1,0 +1,25 @@
+[mysqld]
+# ZABBIX specific settings and tuning
+default-storage-engine          = InnoDB
+innodb                          = FORCE
+innodb_file_per_table           = 1
+innodb_buffer_pool_size         = 512M           # 50-75% of total RAM
+innodb_buffer_pool_instances    = 8            # For MySQL 5.5 - 4, for 5.6+ - 8
+innodb_flush_log_at_trx_commit  = 2
+innodb_flush_method             = O_DIRECT
+innodb_io_capacity              = 800           # HDD disks 500-800,    SSD disks - 2000
+sync-binlog                     = 0
+query-cache-size                = 0
+server_id                       = 96            # for id settings IPs last number used
+report_host                     = {{ansible_hostname}}
+log-slave-updates
+log_bin                         = /var/lib/mysql/log-bin
+log_bin_index                   = /var/lib/mysql/log-bin.index
+relay_log                       = /var/lib/mysql/relay-bin
+relay_log_index                 = /var/lib/mysql/relay-bin.index
+binlog_format                   = mixed
+binlog_cache_size               = 64M
+max_binlog_size                 = 1G
+expire_logs_days                = 5
+binlog_checksum                 = crc32
+max_allowed_packet	            = 500M

@@ -1,0 +1,6 @@
+---
+# handlers file for ha_cluster
+- name: restart pcsd
+  systemd:
+    name: "{{pcs_deamon}}"
+    state: restarted

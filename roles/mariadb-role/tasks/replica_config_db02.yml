@@ -1,0 +1,32 @@
+---
+- name: stop slave
+  mysql_replication:
+    mode: stopslave
+    login_user: "{{zabbix_db_user}}"
+    login_password: "{{zabbix_db_password}}"
+
+
+- name: change master 
+  mysql_replication:
+    mode: changemaster
+    master_host: "{{zabbix_db02_ip}}"
+    master_user: "{{zabbix_db_user}}"
+    master_password: "{{zabbix_db_password}}"
+    master_log_file: logbin.000001
+    master_log_pos: 245
+
+
+- name: grants and configure replication for slave
+  mysql_user:
+    name: zabbix
+    #login_user: "{{zabbix_db_user}}"
+    password: "{{zabbix_db_password}}"
+    host: "{{zabbix_db01_ip}}"
+    priv: '*.*:REPLICATION SLAVE'
+    state: present
+
+- name: start db slave
+  mysql_replication:
+    mode: startslave
+    login_user: "{{zabbix_db_user}}"
+    login_password: "{{zabbix_db_password}}"

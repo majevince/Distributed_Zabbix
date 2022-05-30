@@ -1,0 +1,9 @@
+---
+# handlers file for mariadb-role
+- name: import zabbix schema
+  mysql_db:
+    name: zabbix
+    state: import
+    target: /usr/share/doc/zabbix-server-mysql-*/create.sql.gz
+    login_user: "{{zabbix_db_user}}"
+    login_password: "{{zabbix_db_password}}"

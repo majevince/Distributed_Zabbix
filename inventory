@@ -1,0 +1,11 @@
+[database]
+zabbix_db01
+zabbix_db02
+
+[server]
+zabbix_server01
+zabbix_server02
+
+[webservers]
+zabbix_web01
+zabbix_web02

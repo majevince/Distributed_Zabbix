@@ -1,0 +1,13 @@
+---
+# tasks file for ha_cluster
+- name: ha connfig database
+  import_tasks: ha-mariadb.yml
+  when: inventory_hostname in groups['database']
+
+- name: ha connfig server node
+  import_tasks: ha-server.yml
+  when: inventory_hostname in groups['server']
+
+- name: ha connfig web node
+  import_tasks: ha-web.yml
+  when: inventory_hostname in groups['webservers']  

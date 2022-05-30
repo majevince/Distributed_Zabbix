@@ -1,0 +1,65 @@
+---
+- name: install ha packages
+  yum:
+    name: "{{packages}}"
+    state: present
+    disable_gpg_check: yes
+    enablerepo: "{{ha_repo}}"
+  
+- name: start and enable pcs service
+  systemd:
+    name: "{{pcs_deamon}}"
+    state: started
+    enabled: yes
+- name: ensure firewalld is enable and statrted 
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes 
+
+- name: open ha service
+  firewalld:
+    service: "{{ha_service}}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: create hosts file
+  template:
+    src: templates/web_hosts.j2
+    dest: /etc/hosts
+
+- name: create ha user with password
+  shell: echo "{{ha_password}}" | passwd --stdin "{{ha_user}}"
+  changed_when: false
+  failed_when: false
+
+#- name: initiate cluster node authorization
+ # expect:
+   # command: pcs host auth "{{web_cluster_host}}"
+   # responses:
+    #   'username:': "{{ha_user}}"
+   #    'password:': "{{ha_password}}"
+  #changed_when: false
+
+- name: setup cluster
+  shell: pcs cluster setup "{{web_cluster}}" --start  zabbix_web02 zabbix_web01 
+  register: web_cluster
+  changed_when: false
+  failed_when: false
+
+- name: enable cluster 
+  shell: pcs cluster enable --all
+  changed_when: false
+  failed_when: false
+
+#- name: check cluster status
+- name: create virtual ip resources
+  shell: pcs resource create ClusterIP ocf:heartbeat:IPaddr2 ip="{{web_ip}}" --group zabbix_web_cluster
+  changed_when: false
+  failed_when: false
+
+- name: disable stonith
+  shell: pcs property set stonith-enabled=false 
+  changed_when: false
+  notify: restart pcsd                 
