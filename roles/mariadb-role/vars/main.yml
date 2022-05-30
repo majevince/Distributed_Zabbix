@@ -5,6 +5,8 @@ packages:
     - mariadb
     - python3-PyMySQL
     - firewalld
+    - zabbix-server
+    - zabbix-web-mysql 
 services:
   -  mariadb
   - firewalld
