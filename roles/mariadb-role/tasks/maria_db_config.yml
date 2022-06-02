@@ -1,4 +1,14 @@
 ---
+- name: Disable Selinux
+  lineinfile:
+    path: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: 'SELINUX=disabled'
+  #notify: reboot selinux
+
+- name: Rebooting SELinux
+  meta: flush_handlers
+
 - name: Install Zabbix Repos
   dnf:
     name: "https://repo.zabbix.com/zabbix/5.2/rhel/8/x86_64/zabbix-release-5.2-1.el8.noarch.rpm"
@@ -18,50 +28,72 @@
   loop:
     "{{services}}"
 
-- name: create root password
+- name: open port 3306
+  firewalld:
+    port: 3306/tcp
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: update mariadb password
   mysql_user:
     name: root
-    host: localhost
-    password: "{{ root_db_password }}"
+   # login_unix_socket: /var/run/mysqld/mysqld.sock
+    password: "{{root_db_password}}"
+    priv: "*.*:ALL,GRANT"
+    state: present
+    login_password: "{{ root_db_password }}"
+   # host: "{{item}}"
+   # check_implicit_admin: true
+  #loop:
+   # - localhost
 
-- name: copy .my.cnf file with root password credentials
+- name: update my.cnf config
   template:
-    src: templates/.my.cnf.j2
-    dest: /root/.my.cnf
+    src: templates/my.cnf.j2   
+    dest: /etc/my.cnf
+    mode: 0600
     owner: root
-    mode: '0600'
+
+- name: grant privileges to root user
+  mysql_user:
+    name: root
+    host: "{{item}}"
+    password: "{{ root_db_password }}"
+    login_password: "{{ root_db_password }}"
+  with_items:
+    - 127.0.0.1
+    - ::1    
+    - localhost
 
 - name: create file /etc/my.cnf.d/zabbixdb.cnf
   file:
     path: /etc/my.cnf.d/zabbixdb.cnf
     state: touch
   changed_when: false
-  #notify: import zabbix schema
+  notify: import zabbix schema
  
 - name: copy file config 
   template:
-    src: templates/.my.cnf.j2
+    src: templates/zabbixdb.cnf.j2
     dest: /etc/my.cnf.d/zabbixdb.cnf
 
-- name: update mysql root password login for all root accounts
-  mysql_user:
-    name: root
-    host: "{{ item }}"
-    password: "{{ root_db_password }}"
-  with_items:
-    - "{{ ansible_hostname }}"
-    - 127.0.0.1
-    - ::1
 
+    
 - name: ensure anonymous users are not in the database
   mysql_user:
     name: ''
     host_all: yes
     state: absent
+    host: localhost
+    password: "{{ root_db_password }}"
+    login_password: "{{ root_db_password }}"
 
 - name: create  zabbix user 
   mysql_db: 
     name: zabbix
+    login_password: "{{ root_db_password }}"
+    login_user: root
     collation: utf8_bin
     encoding: utf8
     state: present
@@ -74,7 +106,10 @@
 - name: grant  zabbix db user all privilleges
   mysql_user:
     name: "{{zabbix_db_user}}"
+    login_password: "{{ root_db_password }}"
+    login_user: root
     password: "{{zabbix_db_password}}"
     priv: 'zabbix.*:ALL'
     host: localhost
     state: present
+

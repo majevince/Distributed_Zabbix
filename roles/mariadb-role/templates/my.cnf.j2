@@ -1,4 +1,3 @@
-
 [mysqld]
 # ZABBIX specific settings and tuning
 default-storage-engine          = InnoDB
@@ -12,7 +11,7 @@ innodb_io_capacity              = 800           # HDD disks 500-800,    SSD disk
 sync-binlog                     = 0
 query-cache-size                = 0
 {% if mysql_server_id %}                         
-server_id = {{ ansible_default_ipv4.address.split(".")[3] }} 
+server_id                       = {{ ansible_default_ipv4.address.split(".")[3] }} 
 {% endif %}
 #server_id                       = 96            # for id settings IPs last number used
 report_host                     = {{ansible_hostname}}

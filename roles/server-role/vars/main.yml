@@ -1,0 +1,6 @@
+---
+# vars file for server-role
+server_cluster: zabbix_svr_cluster
+svr_cluster_host:
+  - zabbix_server01
+  - zabbix_server02

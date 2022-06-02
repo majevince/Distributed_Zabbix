@@ -7,3 +7,8 @@
     target: /usr/share/doc/zabbix-server-mysql/create.sql.gz
     login_user: "{{zabbix_db_user}}"
     login_password: "{{zabbix_db_password}}"
+
+- name: restart mariadb
+  systemd:
+    name: mariadb
+    state: restarted 

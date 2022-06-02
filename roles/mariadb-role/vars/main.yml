@@ -17,3 +17,4 @@ root_db_password: vince123
 
 zabbix_db01_ip: 192.168.56.101
 zabbix_db02_ip: 192.168.56.103
+mysql_server_id: yes

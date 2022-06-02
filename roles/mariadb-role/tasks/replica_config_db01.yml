@@ -2,32 +2,45 @@
 - name: stop slave
   mysql_replication:
     mode: stopslave
-    login_user: "{{zabbix_db_user}}"
-    login_password: "{{zabbix_db_password}}"
+    login_user: root
+    login_password: "{{ root_db_password }}"
+  changed_when: false
 
 
 - name: change master 
   mysql_replication:
     mode: changemaster
-    master_host: "{{zabbix_db01_ip}}"
+    master_host: "{{zabbix_db02_ip}}"
     master_user: "{{zabbix_db_user}}"
     master_password: "{{zabbix_db_password}}"
-    master_log_file: logbin.000001
-    master_log_pos: 245
+    #master_log_file: mysql-bin.000712
+    master_log_file: mysql-bin.000003
+    #relay_log_file: mysql-bin.000003
+    login_user: root
+    login_password: "{{ root_db_password }}"
+    master_log_pos: 4
   changed_when: false
+  tags: change master
 
 
 - name: grants and configure replication for slave
   mysql_user:
     name: zabbix
-    #login_user: "{{zabbix_db_user}}"
+    login_user: root
+    login_password: "{{ root_db_password }}"
     password: "{{zabbix_db_password}}"
     host: "{{zabbix_db02_ip}}"
     priv: '*.*:REPLICATION SLAVE'
     state: present
+  changed_when: false
+  tags: change master
+
 
 - name: start db slave
   mysql_replication:
     mode: startslave
-    login_user: "{{zabbix_db_user}}"
-    login_password: "{{zabbix_db_password}}"
+    login_user: root
+    login_password: "{{ root_db_password }}"
+  changed_when: false
+  tags: change master
+  notify: restart mariadb
