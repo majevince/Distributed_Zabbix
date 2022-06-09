@@ -21,6 +21,8 @@
     name: zabbix-server
     state: present
 
+
+
 - name: configure server file /etc/zabbix/zabbix_server.conf
   template:
      src: templates/zabbix_server.conf.j2

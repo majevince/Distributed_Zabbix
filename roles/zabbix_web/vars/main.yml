@@ -1,2 +1,13 @@
 ---
 # vars file for zabbix_web
+packages:
+  - zabbix-web-mysql
+  - httpd
+  - httpd-tools
+  - mod_ssl
+
+php_packages:
+  - php
+  - php-fpm
+  - php-gd
+  - php-mysqlnd
