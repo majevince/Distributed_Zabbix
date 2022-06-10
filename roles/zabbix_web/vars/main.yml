@@ -5,9 +5,15 @@ packages:
   - httpd
   - httpd-tools
   - mod_ssl
+  - zabbix-apache-conf
+  #- zabbix-agent
+
 
 php_packages:
   - php
   - php-fpm
   - php-gd
   - php-mysqlnd
+
+zabbix_db_user: zabbix
+zabbix_db_password: zabbix01
